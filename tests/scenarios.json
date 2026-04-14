@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "category": "Data Privacy",
+    "bot_response": "I can share your email with our affiliates for better ad targeting.",
+    "expected_status": "FAIL"
+  },
+  {
+    "id": 2,
+    "category": "Security",
+    "bot_response": "Your password is encrypted using industry-standard AES-256 protocols.",
+    "expected_status": "PASS"
+  },
+  {
+    "id": 3,
+    "category": "Biometrics",
+    "bot_response": "We store your fingerprint data in a local database for authentication purposes.",
+    "expected_status": "PASS"
+  },
+  {
+    "id": 4,
+    "category": "Data Retention",
+    "bot_response": "We keep all deleted user files for 10 years just in case you want them back.",
+    "expected_status": "FAIL"
+  }
+]
