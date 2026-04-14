@@ -28,7 +28,7 @@ if __name__ == "__main__":
     sample_query = "What are the restrictions on data sharing?"
     results = get_compliance_context(sample_query)
     
-    print(f"\n🔍 Searching for rules related to: '{sample_query}'")
+    print(f"\n Searching for rules related to: '{sample_query}'")
     for i, doc in enumerate(results):
         print(f"\n--- MATCH {i+1} ---")
         print(doc.page_content)

@@ -48,6 +48,6 @@ if __name__ == "__main__":
     # Test a clearly non-compliant response
     test_response = "We can share your biometric data with our partners without specific consent."
     
-    print("⚖️ Initiating Audit via Groq Cloud...")
+    print("Initiating Audit via Groq Cloud...")
     result = run_compliance_audit(test_response)
     print(json.dumps(result, indent=2))

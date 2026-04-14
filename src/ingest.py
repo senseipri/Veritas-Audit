@@ -9,7 +9,7 @@ from langchain_community.vectorstores import Chroma
 load_dotenv()
 
 def build_compliance_vault(pdf_path):
-    print(f"🚀 Starting ingestion for: {pdf_path}")
+    print(f" Starting ingestion for: {pdf_path}")
     
     # 1. Load the PDF
     loader = PyPDFLoader(pdf_path)
@@ -30,7 +30,7 @@ def build_compliance_vault(pdf_path):
     
     # 4. Create the Local Vector Store
     # This creates a folder named 'chroma_db' which acts as your database
-    print("📦 Storing chunks in ChromaDB...")
+    print(" Storing chunks in ChromaDB...")
     vector_db = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
