@@ -4,3 +4,7 @@ chroma_db/
 __pycache__/
 data/*.pdf
 .DS_Store
+model_cache/
+logs/
+tenants/
+compliance_report.json

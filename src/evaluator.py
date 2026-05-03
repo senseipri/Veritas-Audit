@@ -1,8 +1,10 @@
 import json
 import time
+import os
 from src.auditor import run_compliance_audit
 
 def run_benchmark():
+    tenant = os.environ.get("VERITAS_TENANT", "default")
     with open("tests/scenarios.json", "r") as f:
         scenarios = json.load(f)
     
@@ -15,7 +17,7 @@ def run_benchmark():
         print(f"Testing ID {item['id']} [{item['category']}]...")
         
         # Run the audit
-        audit_result = run_compliance_audit(item['bot_response'])
+        audit_result = run_compliance_audit(item["bot_response"], tenant_id=tenant)
         
         # Compare result to expectation
         is_correct = audit_result['status'] == item['expected_status']
