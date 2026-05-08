@@ -12,18 +12,18 @@ Most teams are building faster AI. Veritas builds safer AI.
 
 ## Core Architecture
 
-- **Auditor:** Groq-hosted Llama (`llama-3.3-70b-versatile`) returns `PASS` / `FAIL` JSON.
+- **Actor + Critic (LangGraph):** Groq-hosted Llama (`llama-3.3-70b-versatile`) with a retrieval-grounded audit loop.
 - **Retriever:** Tenant-specific Chroma vector index + MiniLM embeddings for fast policy lookup.
-- **Ingestion:** PDF loader + semantic chunking + vector indexing.
-- **Sentinel:** Streaming monitor simulation for continuous auditing.
-- **API Layer:** FastAPI endpoints for audit decisions, tenant onboarding, and log export.
+- **Indexing:** PDF loader + semantic chunking + vector indexing (`scripts/reindex.py` or `POST /v1/tenants/{id}/reindex`).
+- **Tier-0:** Fast PII intercept in `src/core/bedrock.py` (regex stub or Bedrock Guardrails when wired).
+- **API Layer:** FastAPI ingress under `src/api/` for audit decisions, tenant onboarding, and log export.
 
 ## Multi-Tenant Data Layout
 
 Each tenant is fully isolated on disk:
 
 `tenants/<tenant_id>/truth/truth.pdf`  
-`tenants/<tenant_id>/vectorstore/chroma/*`  
+`tenants/<tenant_id>/chroma_db/`  
 `tenants/<tenant_id>/logs/audit_history.csv`
 
 This enables one shared engine with separate “truth files” and logs per customer.
@@ -56,7 +56,7 @@ cp .env.example .env
 3) Run API:
 
 ```bash
-uvicorn src.api:app --reload
+uvicorn src.api.main:app --reload
 ```
 
 Windows dev shortcut:

@@ -16,8 +16,8 @@ class TenantPaths:
 
 
 def repo_root() -> Path:
-    # src/ -> repo root
-    return Path(__file__).resolve().parents[1]
+    # src/core/ -> repo root
+    return Path(__file__).resolve().parents[2]
 
 
 def tenant_paths(tenant_id: str) -> TenantPaths:
@@ -27,7 +27,7 @@ def tenant_paths(tenant_id: str) -> TenantPaths:
 
     root = repo_root() / "tenants" / safe_tenant
     truth_dir = root / "truth"
-    vectorstore_dir = root / "vectorstore" / "chroma"
+    vectorstore_dir = root / "chroma_db"
     logs_dir = root / "logs"
     truth_pdf_path = truth_dir / "truth.pdf"
 

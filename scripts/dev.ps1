@@ -13,11 +13,11 @@ if (Test-Path ".env") {
 }
 
 if ($ApiOnly) {
-  uvicorn src.api:app --reload
+  uvicorn src.api.main:app --reload
   exit 0
 }
 
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "uvicorn src.api:app --reload"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "uvicorn src.api.main:app --reload"
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "streamlit run app.py"
 Write-Host "Launched API + Streamlit in separate terminals."
 

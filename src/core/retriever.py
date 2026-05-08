@@ -5,7 +5,7 @@ from functools import lru_cache
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 
-from src.storage import ensure_dirs, tenant_paths
+from src.core.storage import ensure_dirs, tenant_paths
 
 
 @lru_cache(maxsize=1)
@@ -15,6 +15,11 @@ def _embeddings() -> HuggingFaceEmbeddings:
         cache_folder="./model_cache",
         model_kwargs={"device": "cpu"},
     )
+
+
+def embeddings_model() -> HuggingFaceEmbeddings:
+    """Shared embedding model for indexing and retrieval."""
+    return _embeddings()
 
 
 @lru_cache(maxsize=128)

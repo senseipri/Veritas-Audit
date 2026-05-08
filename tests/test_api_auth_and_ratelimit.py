@@ -12,13 +12,18 @@ def _env(monkeypatch):
 
 
 def _client(monkeypatch):
-    # Import inside to pick up env vars
-    import src.api as api
+    import src.api.main as api_main
+    import src.api.security as security
 
-    # Ensure rate limiter state doesn't leak across tests
-    api._RATE_LIMIT_BUCKETS.clear()
+    security._RATE_LIMIT_BUCKETS.clear()
+    return TestClient(api_main.app)
 
-    return TestClient(api.app)
+
+def test_health_requires_no_api_key(monkeypatch):
+    c = _client(monkeypatch)
+    r = c.get("/health")
+    assert r.status_code == 200
+    assert r.json().get("ok") is True
 
 
 def test_missing_api_key_is_401(monkeypatch):
@@ -61,4 +66,3 @@ def test_rate_limit(monkeypatch):
     assert c.get("/v1/tenants", headers=headers).status_code == 200
     third = c.get("/v1/tenants", headers=headers)
     assert third.status_code == 429
-
