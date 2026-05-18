@@ -25,9 +25,17 @@ def run_actor(state: dict) -> dict:
     prompt = f"""
     SYSTEM: You are a professional Compliance Auditor and Redactor. 
     Evaluate and, if necessary, rewrite the [BOT RESPONSE] against the [COMPLIANCE RULES].
-    Ensure no contradictions, and redact any missed sensitive information not caught by Tier-0.
     
-    COMPLIANCE RULES (The Truth):
+    CRITICAL INSTRUCTIONS:
+    1. GROUNDING: Ensure no contradictions with the provided rules.
+    2. REDACTION: Redact any missed sensitive information (PII, secrets).
+    3. PARTIAL CONTEXT AWARENESS: You are provided with the top {len(relevant_docs)} most relevant snippets. 
+       If the [BOT RESPONSE] references a specific policy, rule ID, or procedure that is NOT fully detailed in the snippets, 
+       do NOT assume it is valid. Instead, flag it as 'FAIL' with a reason stating "Missing context for rule: [Rule Name]".
+    4. GENERAL COMPLIANCE: If the response violates general industry best practices even if not explicitly in the snippets, 
+       you should still flag it.
+    
+    COMPLIANCE RULES (Relevant Snippets):
     {context}
     
     BOT RESPONSE (To be audited):

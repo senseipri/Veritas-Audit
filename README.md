@@ -15,7 +15,7 @@ Most teams are building faster AI. Veritas builds safer AI.
 - **Actor + Critic (LangGraph):** Groq-hosted Llama (`llama-3.3-70b-versatile`) with a retrieval-grounded audit loop.
 - **Retriever:** Tenant-specific Chroma vector index + MiniLM embeddings for fast policy lookup.
 - **Indexing:** PDF loader + semantic chunking + vector indexing (`scripts/reindex.py` or `POST /v1/tenants/{id}/reindex`).
-- **Tier-0:** Fast PII intercept in `src/core/bedrock.py` (regex stub or Bedrock Guardrails when wired).
+- **Tier-0:** Fast PII intercept in `src/core/guardrails.py` (regex pipeline + optional NeMo Guardrails LLM-level policy enforcement).
 - **API Layer:** FastAPI ingress under `src/api/` for audit decisions, tenant onboarding, and log export.
 
 ## Multi-Tenant Data Layout

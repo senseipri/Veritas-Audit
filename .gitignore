@@ -8,3 +8,4 @@ model_cache/
 logs/
 tenants/
 compliance_report.json
+graphify-out/

@@ -37,16 +37,17 @@ def invalidate_tenant_cache(tenant_id: str | None = None) -> None:
     _tenant_db.cache_clear()
 
 
-def get_compliance_context(tenant_id: str, query: str, k: int = 3):
+def get_compliance_context(tenant_id: str, query: str, k: int = 6):
     """
     Finds the top k relevant law/policy snippets from the local vector store.
+    Uses MMR (Max Marginal Relevance) to ensure diversity in retrieved snippets.
     """
     # 1. Connect to tenant-isolated vector DB (cached for low latency)
     db = _tenant_db(tenant_id)
 
-    # 2. Perform the search
-    # This turns your query into a vector and finds the closest matches
-    docs = db.similarity_search(query, k=k)
+    # 2. Perform the search with MMR for better diversity
+    # k is the final number of docs, fetch_k is how many to initially retrieve for re-ranking
+    docs = db.max_marginal_relevance_search(query, k=k, fetch_k=min(k * 4, 20))
     
     return docs
 

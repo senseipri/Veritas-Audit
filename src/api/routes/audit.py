@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from src.api.security import AuthContext, authenticate_api_key, authorize_tenant_access
 from src.core.storage import tenant_paths
-from src.core.bedrock import intercept_pii
+from src.core.guardrails import intercept_pii
 from src.agents.graph import run_deep_audit
 
 router = APIRouter()
@@ -33,7 +33,7 @@ def audit_message(payload: AuditRequest, auth: AuthContext = Depends(authenticat
         if payload.fail_closed:
             raise HTTPException(status_code=412, detail="Tenant has no indexed truth.")
 
-    # Tier-0: AWS Bedrock PII Interception
+    # Tier-0: NeMo Guardrails PII Interception
     tier0_result = intercept_pii(payload.response_text)
     if tier0_result["is_blocked"]:
         latency_ms = int((time.perf_counter() - started) * 1000)

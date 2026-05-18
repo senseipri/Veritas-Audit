@@ -16,3 +16,4 @@ streamlit
 pytest
 httpx
 langgraph
+nemoguardrails
