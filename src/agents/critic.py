@@ -2,9 +2,10 @@ import os
 import json
 from groq import Groq
 from src.core.retriever import get_compliance_context
+from src.core.config import settings
 
 def _client() -> Groq:
-    api_key = os.environ.get("GROQ_API_KEY")
+    api_key = settings.GROQ_API_KEY
     if not api_key:
         raise RuntimeError("GROQ_API_KEY is required to run critic audit.")
     return Groq(api_key=api_key)
@@ -47,7 +48,7 @@ def run_critic(state: dict) -> dict:
     """
     
     response = _client().chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model=settings.CRITIC_MODEL,
         messages=[{"role": "user", "content": prompt}],
         response_format={"type": "json_object"}
     )
