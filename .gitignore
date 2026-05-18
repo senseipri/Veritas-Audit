@@ -9,3 +9,4 @@ logs/
 tenants/
 compliance_report.json
 graphify-out/
+.agent
