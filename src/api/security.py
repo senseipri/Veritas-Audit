@@ -1,10 +1,10 @@
-import os
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from threading import Lock
 from fastapi import HTTPException, Request
 from src.core.storage import tenant_paths
+from src.core.config import settings
 
 @dataclass(frozen=True)
 class AuthContext:
@@ -16,7 +16,7 @@ _RATE_LIMIT_BUCKETS: dict[str, deque[float]] = defaultdict(deque)
 _RATE_LIMIT_LOCK = Lock()
 
 def _parse_tenant_key_pairs() -> dict[str, str]:
-    raw = os.environ.get("VERITAS_API_KEYS", "").strip()
+    raw = settings.VERITAS_API_KEYS.strip()
     pairs: dict[str, str] = {}
     if not raw:
         return pairs
@@ -37,7 +37,7 @@ def authenticate_api_key(request: Request) -> AuthContext:
         raise HTTPException(status_code=401, detail="Missing x-api-key header.")
 
     tenant_map = _parse_tenant_key_pairs()
-    admin_key = os.environ.get("VERITAS_ADMIN_KEY", "").strip()
+    admin_key = settings.VERITAS_ADMIN_KEY.strip()
 
     if admin_key and api_key == admin_key:
         return AuthContext(api_key=api_key, tenant_id=None, is_admin=True)
@@ -60,10 +60,7 @@ def authorize_tenant_access(auth: AuthContext, tenant_id: str) -> str:
     return target
 
 def _rate_limit_per_minute() -> int:
-    try:
-        return max(1, int(os.environ.get("VERITAS_RATE_LIMIT_PER_MINUTE", "60").strip()))
-    except ValueError:
-        return 60
+    return settings.REQUESTS_PER_MINUTE
 
 async def rate_limit_middleware(request: Request, call_next):
     if not request.url.path.startswith("/v1"):
