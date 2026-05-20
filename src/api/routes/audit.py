@@ -6,6 +6,9 @@ from src.api.security import AuthContext, authenticate_api_key, authorize_tenant
 from src.core.storage import tenant_paths
 from src.core.guardrails import intercept_pii
 from src.agents.graph import run_deep_audit
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 router = APIRouter()
 
@@ -37,6 +40,16 @@ def audit_message(payload: AuditRequest, auth: AuthContext = Depends(authenticat
     tier0_result = intercept_pii(payload.response_text)
     if tier0_result["is_blocked"]:
         latency_ms = int((time.perf_counter() - started) * 1000)
+        logger.info(
+            "Audit call completed",
+            tenant_id=paths.tenant_id,
+            latency_ms=latency_ms,
+            status="FAIL",
+            decision="BLOCK",
+            model="nemo-guardrails",
+            tokens_used=0,
+            reason="Blocked by Tier-0 PII Guardrails"
+        )
         return AuditResponse(
             tenant_id=paths.tenant_id,
             status="FAIL",
@@ -48,13 +61,27 @@ def audit_message(payload: AuditRequest, auth: AuthContext = Depends(authenticat
         )
 
     # Agentic Verification
-    audit_result = run_deep_audit(paths.tenant_id, tier0_result["redacted_text"])
+    latency_ms = int((time.perf_counter() - started) * 1000)
+    audit_result = run_deep_audit(paths.tenant_id, tier0_result["redacted_text"], latency_ms=latency_ms)
     
     latency_ms = int((time.perf_counter() - started) * 1000)
     
     # We define status as PASS if Critic APPROVED and no MAJOR violations from Actor
     final_status = "PASS" if audit_result.get("critic_status") == "APPROVED" else "FAIL"
     decision = "ALLOW" if final_status == "PASS" else "BLOCK"
+
+    models_str = ", ".join(list(set(audit_result.get("models_used", []))))
+    
+    logger.info(
+        "Audit call completed",
+        tenant_id=paths.tenant_id,
+        latency_ms=latency_ms,
+        status=final_status,
+        decision=decision,
+        model=models_str,
+        tokens_used=audit_result.get("total_tokens", 0),
+        reason=audit_result.get("actor_reason", "No reason provided.")
+    )
 
     return AuditResponse(
         tenant_id=paths.tenant_id,

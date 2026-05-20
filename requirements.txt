@@ -3,6 +3,9 @@ uvicorn[standard]
 python-dotenv
 groq
 pydantic
+pydantic-settings
+sqlmodel
+alembic
 langchain
 langchain-community
 langchain-text-splitters
@@ -17,3 +20,4 @@ pytest
 httpx
 langgraph
 nemoguardrails
+structlog
