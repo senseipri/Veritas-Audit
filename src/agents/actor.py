@@ -60,10 +60,13 @@ def run_actor(state: dict) -> dict:
     )
     
     result = json.loads(response.choices[0].message.content)
+    tokens_used = response.usage.total_tokens if response.usage else 0
     
     return {
         "current_text": result.get("revised_text", ai_output),
         "actor_status": result.get("status"),
         "actor_reason": result.get("reason"),
-        "iterations": state.get("iterations", 0) + 1
+        "iterations": state.get("iterations", 0) + 1,
+        "total_tokens": state.get("total_tokens", 0) + tokens_used,
+        "models_used": state.get("models_used", []) + [settings.ACTOR_MODEL]
     }

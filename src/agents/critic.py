@@ -54,9 +54,12 @@ def run_critic(state: dict) -> dict:
     )
     
     result = json.loads(response.choices[0].message.content)
+    tokens_used = response.usage.total_tokens if response.usage else 0
     
     return {
         "critic_status": result.get("status"),
         "critic_feedback": result.get("feedback"),
-        "violations": state.get("violations", []) + result.get("violations_found", [])
+        "violations": state.get("violations", []) + result.get("violations_found", []),
+        "total_tokens": state.get("total_tokens", 0) + tokens_used,
+        "models_used": state.get("models_used", []) + [settings.CRITIC_MODEL]
     }
